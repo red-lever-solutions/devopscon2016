@@ -1,0 +1,17 @@
+#cloud-config
+# Cloud config for the bastion host
+
+# log cloud-config output:
+output: {all: '| /usr/bin/logger -t bastion.cloudinit'}
+
+runcmd:
+ # Set hostname
+ - sed -i '1s/ip/bastion/' /etc/hostname
+ - echo "127.0.0.1 $(cat /etc/hostname)" >> /etc/hosts
+ - service hostname restart
+
+ # Change ssh port to 10022 and restrict root and user login
+ - sed -i -e '/^Port/s/^.*$/Port 10022/' etc/ssh/sshd_config
+ - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+ - sed -i -e '$aAllowUsers ubuntu' /etc/ssh/sshd_config
+ - restart ssh

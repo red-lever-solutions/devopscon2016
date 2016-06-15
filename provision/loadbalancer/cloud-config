@@ -1,0 +1,43 @@
+#cloud-config
+# Cloud config for haproxy loadbalancer
+
+# log cloud-config output:
+output: {all: '| /usr/bin/logger -t loadbalancer.cloudinit'}
+
+# Update packages:
+package_upgrade: true
+
+# Install packages:
+packages:
+ - awscli
+
+runcmd:
+ # Set hostname
+ - sed -i '1s/ip/loadbalancer/' /etc/hostname
+ - echo "127.0.0.1 $(cat /etc/hostname)" >> /etc/hosts
+ - service hostname restart
+
+ # Install docker
+ - curl -sSL https://get.docker.com/ | sudo sh
+
+ # Install docker-compose
+ - curl -L https://github.com/docker/compose/releases/download/1.7.1/docker-compose-`uname -s`-`uname -m` > docker-compose
+ - chmod +x docker-compose
+ - sudo mv docker-compose /usr/local/bin/docker-compose
+
+ # Restrict network access between container & use overlay storage driver:
+ - echo 'DOCKER_OPTS="--icc=false"' >> /etc/default/docker
+ - service docker restart
+
+ # Set role
+ - export ROLE=loadbalancer
+
+ # Copy Bootstrap data from S3:
+ - mkdir /tmp/bootstrap
+ - aws s3 cp s3://redlever-devops/$ROLE.tar.gz /tmp/bootstrap/ --region eu-west-1
+
+ # Call bootstrap script:
+ - cd /tmp/bootstrap
+ - tar xzvf $ROLE.tar.gz 
+ - cd /tmp/bootstrap/$ROLE
+ - ./bootstrap.sh

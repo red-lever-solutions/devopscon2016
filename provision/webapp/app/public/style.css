@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,300);
+
+body {
+    font-family: "Open Sans", sans-serif;
+    font-weight: 300;
+    font-size: 2em;
+    line-height: 2em;
+    color: #232323;
+}
+
+strong {
+    font-weight: 600;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Open Sans", sans-serif;
+    font-weight: 300;
+    color: #434343;
+    font-size: 2.5em;
+    margin-bottom: .4em;
+}
+
+p {
+    margin-bottom: .5em;
+}
+
+.container {
+	  width:  90%;
+		height: 80%;
+    margin: 0px auto;
+    margin-top:10px;
+}
+.editor {
+	font-family: "Open Sans", "Helvetica Neue", Helvetica, sans-serif; 
+	font-weight: 400;
+	font-size: 1.2em;
+	line-height: 1.2em;
+	margin-top: 30px;
+}
+
+svg {
+	font-family: "Open Sans", "Helvetica Neue", Helvetica, sans-serif; 
+	font-weight: 400;
+	font-size: 20px;
+	line-height: 20px;
+
+}
+
+svg text {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Chrome/Safari/Opera */
+  -khtml-user-select: none;    /* Konqueror */
+  -moz-user-select: none;      /* Firefox */
+  -ms-user-select: none;       /* IE/Edge */
+  user-select: none;           /* non-prefixed version, currently
+                                  not supported by any browser */
+}
+

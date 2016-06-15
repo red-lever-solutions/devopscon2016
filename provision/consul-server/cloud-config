@@ -1,0 +1,42 @@
+#cloud-config
+# Cloud config for consul server
+
+# log cloud-config output:
+output: {all: '| /usr/bin/logger -t consul.cloudinit'}
+
+# Update packages:
+package_upgrade: true
+
+# Install packages:
+packages:
+ - awscli
+ - unzip
+
+runcmd:
+ # Set hostname
+ - sed -i '1s/ip/consul/' /etc/hostname
+ - echo "127.0.0.1 $(cat /etc/hostname)" >> /etc/hosts
+ - service hostname restart
+
+ # Install consul
+ - cd /tmp
+ - wget https://releases.hashicorp.com/consul/0.6.4/consul_0.6.4_linux_amd64.zip -O consul.zip
+ - unzip consul.zip >/dev/null
+ - chmod +x consul
+ - mv consul /usr/local/bin/consul
+ - mkdir -p /etc/consul.d
+ - mkdir -p /mnt/consul
+ - mkdir -p /etc/service
+
+ # Set role
+ - export ROLE=consul-server
+
+ # Copy Bootstrap data from S3:
+ - mkdir /tmp/bootstrap
+ - aws s3 cp s3://redlever-devops/$ROLE.tar.gz /tmp/bootstrap/ --region eu-west-1
+
+ # Call bootstrap script:
+ - cd /tmp/bootstrap
+ - tar xzvf $ROLE.tar.gz 
+ - cd /tmp/bootstrap/$ROLE
+ - ./bootstrap.sh

@@ -1,0 +1,38 @@
+{
+  "name": "devops-con-demo",
+  "version": "1.0.0",
+  "description": "Demo Webclient ",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha",
+    "build-js": "browserify ./../src/main.js > ./../tmp-script/script.js -dv",
+    "watch-js": "watchify ./../src/main.js -o ./../tmp-script/script.js -dv",
+    "uglywatch-js": "watchify ./../src/main.js -dv -o 'uglifyjs --keep-fnames > ./../tmp-script/script.js'",
+    "buildugly-js": "browserify ./../src/main.js | uglifyjs --keep-fnames > ./../tmp-script/script.js",
+    "buildugly-js-local": "browserify ./../src-www/main.js | uglifyjs --keep-fnames > ./public/script.js"
+  },
+  "author": "Robert Achleitner",
+  "license": "closed",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "dependencies": {
+    "koa": "^1.1.2",
+    "koa-router": "^5.4.0",
+    "koa-router-static": "^1.2.0",
+    "koa-cors": "0.0.16",
+    "koa-static": "^2.0.0",
+		"natsort": "^1.0.5",
+		"request": "^2.72.0",
+    "d3": "^3.5.16"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "dropzone": "^4.3.0",
+    "events": "^1.1.0",
+    "mocha": "^2.4.5",
+    "watchify": "^3.7.0",
+    "uglifyjs": "^2.4.10"
+  }
+}

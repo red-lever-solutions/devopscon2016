@@ -1,0 +1,23 @@
+version: "2"
+
+services:
+  loadbalancer:
+    build:
+      context: ./haproxy-template/
+    depends_on:
+      - consul-agent
+    network_mode: host
+    environment:
+      CONSUL_CONNECT: ${PRIVATE_IP}:8500
+    volumes:
+      - /dev/log:/dev/log
+    restart: on-failure
+
+  consul-agent:
+    image: consul:latest
+    environment:
+      CONSUL_LOCAL_CONFIG: '{"leave_on_terminate": true}'
+    network_mode: host
+    command: ["agent", "-retry-join=10.0.5.10", "-retry-join=10.0.6.10", "-retry-join=10.0.7.10",
+    "-data-dir=/tmp/consul", "-bind=${PRIVATE_IP}", "-client=${PRIVATE_IP}", "-log-level=debug"]
+    restart: on-failure

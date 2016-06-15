@@ -1,0 +1,61 @@
+version: '2'
+
+services:  
+
+  devops-con-www-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - 80:80
+    environment:
+      AGENT_IP: consul-agent
+      HOST_IP: "${PRIVATE_IP}"
+      LISTENING_PORT: 80
+      SERVICE_NAME: "web-client"
+    volumes:
+      - ./app:/opt/www/app-src
+      - ./src-www:/opt/www/src
+  
+  devops-con-www-dev2:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - 90:90
+    environment:
+      AGENT_IP: consul-agent2
+      HOST_IP: "${PRIVATE_IP}"
+      LISTENING_PORT: 90
+      SERVICE_NAME: "web-client"
+    volumes:
+      - ./app:/opt/www/app-src
+      - ./src-www:/opt/www/src
+
+
+  consul-server:
+    image: consul:latest
+    ports:
+      - 38500:8500
+    command: ["agent", "-server",  "-client=0.0.0.0", "-bootstrap-expect=1"]
+
+  consul-agent:
+    image: consul:latest
+    depends_on:
+      - consul-server
+    ports:
+      - 48500:8500
+    environment:
+      CONSUL_LOCAL_CONFIG: '{"leave_on_terminate": true}'
+    command: ["agent",  "-client=0.0.0.0", "-retry-join=consul-server"]
+
+  consul-agent2:
+    image: consul:latest
+    depends_on:
+      - consul-server
+    ports:
+      - 49500:8500
+    environment:
+      CONSUL_LOCAL_CONFIG: '{"leave_on_terminate": true}'
+    command: ["agent",  "-client=0.0.0.0", "-retry-join=consul-server"]
+

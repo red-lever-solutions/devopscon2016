@@ -1,0 +1,37 @@
+version: "2"
+
+services:
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    restart: on-failure
+    ports:
+      - 80
+    depends_on:
+      - consul-agent
+      - consul-registrator
+    environment:
+      AGENT_IP: "${PRIVATE_IP}"
+      HOST_IP: "${PRIVATE_IP}"
+      LISTENING_PORT: 80
+      SERVICE_NAME: "webapp"
+      SERVICE_80_NAME: "webapp"
+
+  consul-registrator:
+    image: gliderlabs/registrator
+    restart: on-failure
+    network_mode: host
+    depends_on:
+      - consul-agent
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock
+    command: ["-ip=${PRIVATE_IP}", "consul://${PRIVATE_IP}:8500"]
+
+  consul-agent:
+    image: consul:latest
+    restart: on-failure
+    network_mode: host
+    environment:
+      CONSUL_LOCAL_CONFIG: '{"leave_on_terminate": true}'
+    command: ["agent",  "-client=0.0.0.0", "-bind=${PRIVATE_IP}", "-retry-join=10.0.5.10", "-retry-join=10.0.6.10", "-retry-join=10.0.7.10"]
